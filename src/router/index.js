@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 
 import Home from "../Home.vue";
@@ -15,59 +14,99 @@ import LeaveManagement from "../views/admin/LeaveManagement.vue";
 import UsersManagement from "../views/admin/UsersManagement.vue";
 
 const routes = [
-  { path: "/", name: "Home", component: Home, meta: { breadcrumb: "Home" } },
+  {
+    path: "/",
+    name: "Home",
+    component: Home,
+    meta: {
+      breadcrumb: "Home",
+      title: "Home | Attendance System",
+    },
+  },
   {
     path: "/login",
     name: "Login",
     component: Login,
-    meta: { breadcrumb: "Login", requiresGuest: true },
+    meta: {
+      breadcrumb: "Login",
+      requiresGuest: true,
+      title: "Login | Attendance System",
+    },
   },
   {
     path: "/register-company",
     name: "RegisterCompany",
     component: RegisterCompany,
-    meta: { breadcrumb: "Register Company", requiresGuest: true },
+    meta: {
+      breadcrumb: "Register Company",
+      requiresGuest: true,
+      title: "Register Company | Attendance System",
+    },
   },
   {
     path: "/register-admin",
     name: "RegisterAdmin",
     component: RegisterAdmin,
-    meta: { breadcrumb: "Register Admin", requiresGuest: true },
+    meta: {
+      breadcrumb: "Register Admin",
+      requiresGuest: true,
+      title: "Register Admin | Attendance System",
+    },
   },
   {
     path: "/admin",
     component: AdminDashboard,
-    meta: { breadcrumb: "Admin", requiresAuth: true, roles: ["admin"] },
+    meta: {
+      breadcrumb: "Admin",
+      requiresAuth: true,
+      roles: ["admin"],
+      title: "Admin Dashboard | Attendance System",
+    },
     children: [
       {
         path: "",
         name: "AdminDashboard",
         component: DashboardContent,
-        meta: { breadcrumb: "Dashboard" },
+        meta: {
+          breadcrumb: "Dashboard",
+          title: "Dashboard | Attendance System",
+        },
       },
       {
         path: "users",
         name: "UsersManagement",
         component: UsersManagement,
-        meta: { breadcrumb: "User Management" },
+        meta: {
+          breadcrumb: "User Management",
+          title: "User Management | Attendance System",
+        },
       },
       {
         path: "attendance",
         name: "AttendanceManagement",
         component: AttendanceManagement,
-        meta: { breadcrumb: "Attendance Management" },
+        meta: {
+          breadcrumb: "Attendance Management",
+          title: "Attendance | Attendance System",
+        },
       },
       {
         path: "leave",
         name: "LeaveManagement",
         component: LeaveManagement,
-        meta: { breadcrumb: "Leave Management" },
+        meta: {
+          breadcrumb: "Leave Management",
+          title: "Leave | Attendance System",
+        },
       },
       {
         path: "company",
         name: "CompanySettings",
         component: CompanySettings,
-        meta: { breadcrumb: "Company Settings" },
+        meta: {
+          breadcrumb: "Company Settings",
+          title: "Company Settings | Attendance System",
+        },
       },
     ],
   },
@@ -78,12 +117,11 @@ const router = createRouter({
   routes,
 });
 
-// ===== Auth Guards (opsional tapi direkomendasikan) =====
+// ===== Auth Guards =====
 function getToken() {
   return localStorage.getItem("token") || sessionStorage.getItem("token");
 }
 function getRole() {
-  // coba ambil dari 'user.role' dulu, jatuh ke 'role' kalau perlu
   try {
     const u = JSON.parse(
       localStorage.getItem("user") || sessionStorage.getItem("user") || "null"
@@ -108,11 +146,16 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta?.requiresGuest && token) {
-    // arahkan ke dashboard sesuai role
     return next(role === "admin" ? "/admin" : "/");
   }
 
   next();
+});
+
+// ===== Dynamic Page Title =====
+router.afterEach((to) => {
+  const defaultTitle = "Attendance System";
+  document.title = to.meta?.title || defaultTitle;
 });
 
 export default router;

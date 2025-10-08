@@ -95,16 +95,23 @@ export default {
       isDark.value = document.documentElement.classList.contains("dark");
     };
 
+    // ADDED: simpan observer ke variabel agar bisa di-disconnect
+    let mo = null;
+
     onMounted(() => {
-      const mo = new MutationObserver(updateIsDark);
+      mo = new MutationObserver(updateIsDark);
       mo.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ["class"],
       });
+
+      // ADDED: tambah padding ke body agar konten tidak ketiban sidebar fixed
+      document.body.classList.add("has-admin-sidebar");
     });
 
     onBeforeUnmount(() => {
-      mq && mq.removeEventListener?.("change", updateIsDark);
+      // Hapus class padding saat komponen dilepas
+      document.body.classList.remove("has-admin-sidebar");
       mo && mo.disconnect();
     });
 
@@ -143,5 +150,34 @@ export default {
 aside {
   width: 280px;
   transition: width 0.3s ease;
+}
+
+/* ADDED: fixed sidebar + scroll sendiri */
+.admin-sidebar {
+  position: fixed; /* kunci di layar */
+  top: 0;
+  left: 0;
+  height: 100vh; /* penuh tinggi layar */
+  overflow-y: auto; /* biar sidebar bisa scroll sendiri */
+  z-index: 1000; /* di atas konten biasa */
+}
+</style>
+
+<!-- ADDED: global style untuk memberi ruang ke konten utama -->
+<style>
+.has-admin-sidebar {
+  padding-left: 280px; /* sinkron dengan lebar sidebar */
+}
+
+/* Responsif: pada layar kecil, biar tidak menekan konten */
+@media (max-width: 992px) {
+  .has-admin-sidebar {
+    padding-left: 0;
+  }
+  /* Opsi: pada layar kecil, bisa ubah sidebar jadi overlay */
+  .admin-sidebar {
+    position: fixed;
+    transform: translateX(0); /* bisa diubah ke -100% jika ingin toggle */
+  }
 }
 </style>
